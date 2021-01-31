@@ -21,6 +21,10 @@ public class MarkDownAppender {
         return new MarkDownAppender(appendable);
     }
 
+    public static MarkDownAppender of(MarkDownAppender markDownAppender) {
+        return new MarkDownAppender(markDownAppender.getAppendable());
+    }
+
     private MarkDownAppender() {
     }
 
@@ -44,6 +48,14 @@ public class MarkDownAppender {
     public MarkDownAppender appenderText(String text) {
         this.appendable.append(text).append(LINE_SEPARATOR);
         return this;
+    }
+
+    public Appendable getAppendable() {
+        return appendable;
+    }
+
+    public static String getLineSeparator() {
+        return LINE_SEPARATOR;
     }
 
     @Override

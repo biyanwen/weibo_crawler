@@ -16,7 +16,7 @@ public class CookieHelper {
         Map<String, String> cookieMap = new HashMap<>(16);
         Arrays.stream(split).forEach(s -> {
             String[] singleCookie = s.split("=");
-            cookieMap.put(singleCookie[0], singleCookie[1]);
+            cookieMap.put(singleCookie[0].trim(), singleCookie[1]);
         });
         return cookieMap;
     }

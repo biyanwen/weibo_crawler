@@ -2,17 +2,19 @@ package com.github.biyanwen.controller;
 
 import com.github.biyanwen.controller.request.CrawlArticlesRequest;
 import com.github.biyanwen.helper.CookieHelper;
-import com.github.biyanwen.parse.ExclusiveArticleParse;
-import com.github.biyanwen.parse.HtmlParse;
-import com.github.biyanwen.pojo.MarkDownBean;
-import com.github.biyanwen.render.MarkDownRender;
-import com.github.biyanwen.render.Render;
+import com.github.biyanwen.service.ExclusiveArticleService;
+import lombok.SneakyThrows;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author 10644
@@ -20,18 +22,19 @@ import java.util.Map;
 @RestController
 @RequestMapping("/web")
 public class Controller {
+    @Autowired
+    ExclusiveArticleService exclusiveArticleService;
 
     @PostMapping("/crawlArticles")
     public String crawlArticles(@RequestBody CrawlArticlesRequest request) {
+        exclusiveArticleService.crawlArticles(request.getCookies(), request.getUrl());
+        return "success";
+    }
 
-        Map<String, String> cookieMap = CookieHelper.createCookieMap(request.getCookies());
-        HtmlParse htmlParse = new ExclusiveArticleParse();
-        //"https://weibo.com/ttarticle/p/show?id=2309404595914059677855#_0"
-        MarkDownBean markDownBean = htmlParse.parse(request.getUrl(), cookieMap);
-        Render render = new MarkDownRender();
-        Path path = Paths.get(System.getProperty("user.dir") + File.separator + markDownBean.getTitle().getText() + ".md");
-        render.render(markDownBean, path);
-
+    @SneakyThrows
+    @PostMapping("/crawlArticlesBatch")
+    public String crawlArticlesBatch(@RequestBody CrawlArticlesRequest request) {
+        exclusiveArticleService.crawlArticlesBatch(request.getCookies(), request.getUrl());
         return "success";
     }
 }
