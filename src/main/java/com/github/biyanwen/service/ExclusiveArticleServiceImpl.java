@@ -7,10 +7,7 @@ import com.github.biyanwen.pojo.MarkDownBean;
 import com.github.biyanwen.render.MarkDownRender;
 import com.github.biyanwen.render.Render;
 import lombok.SneakyThrows;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Cookie;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.stereotype.Service;
@@ -20,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author 10644
@@ -55,10 +53,26 @@ public class ExclusiveArticleServiceImpl implements ExclusiveArticleService {
         });
         driver.get(url);
         Thread.sleep(5000);
-        List<WebElement> elements = driver.findElements(By.cssSelector("#Pl_Official_MyProfileFeed__20 > div > div:nth-child(5) > div.WB_feed_detail.clearfix > div.WB_detail > *"));
+        ((JavascriptExecutor) driver).executeScript("window.scrollTo(0,document.body.scrollHeight)");
+        Thread.sleep(1000);
+        Object winHeightMark = null;
+        Object winHeight = getWinHeight(driver);
+        while (!Objects.equals(winHeightMark, winHeight)) {
+            winHeightMark = winHeight;
+            winHeight = getWinHeight(driver);
+        }
+        List<WebElement> elements = driver.findElements(By.cssSelector("div.WB_detail > div.WB_text.W_f14 > a"));
         for (WebElement element : elements) {
-            System.out.println(element.getText());
+            Thread.sleep(500);
+            this.crawlArticles(cookies,element.getAttribute("href"));
         }
         driver.close();
+    }
+
+    @SneakyThrows
+    private Object getWinHeight(WebDriver driver) {
+        Object winHeight = ((JavascriptExecutor) driver).executeScript("return document.body.scrollHeight;");
+        Thread.sleep(1000);
+        return winHeight;
     }
 }
