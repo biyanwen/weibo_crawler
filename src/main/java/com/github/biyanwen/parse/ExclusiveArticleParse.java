@@ -24,9 +24,9 @@ public class ExclusiveArticleParse extends AbstractHtmlParse {
         Elements mainEditor = documentByUrl.getElementsByClass("main_editor ");
         String title = mainEditor.select(".main_editor > .title").text();
         String pointOfView = mainEditor.select(".main_editor > .preface_v2").text();
-        Elements select = mainEditor.select(".main_editor > .WB_editor_iframe_new > *");
+        Elements elements = getElementsByMainEditor(mainEditor);
         StringBuilder stringBuilder = new StringBuilder();
-        select.forEach(element -> {
+        elements.forEach(element -> {
             String result = getResultByElement(element);
             stringBuilder.append(result).append(System.lineSeparator());
         });
@@ -35,6 +35,16 @@ public class ExclusiveArticleParse extends AbstractHtmlParse {
                 .setText(stringBuilder.toString());
 
         return markDownBean;
+    }
+
+    private Elements getElementsByMainEditor(Elements mainEditor) {
+        //不同排版的文章html结构不同
+        Elements elements;
+        elements = mainEditor.select(".main_editor > .WB_editor_iframe_new > *");
+        if (elements.size() == 0) {
+            elements = mainEditor.select(".main_editor > .WB_editor_iframe_word > *");
+        }
+        return elements;
     }
 
     private String getResultByElement(Element element) {

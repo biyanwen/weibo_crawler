@@ -30,14 +30,6 @@ public class MarkDownRender implements Render {
     @Override
     public String render(MarkDownBean markDownBean) {
         MarkDownAppender downAppender = renderMarkDownBeanList(Collections.singletonList(markDownBean), MarkDownAppender.of());
-//        String title = markDownBean.getTitle().getText();
-//        String pointOfView = markDownBean.getPointOfView();
-//        String text = markDownBean.getText();
-//        MarkDownAppender markDownAppender = MarkDownAppender.of()
-//                .appendTitle(title, TitleLevel.ONE)
-//                .appendPointView(pointOfView)
-//                .appenderText(text);
-
         MarkDownAppender appender = renderMarkDownBeanList(markDownBean.getMarkDownBeanList(), downAppender);
         return appender.toString();
     }
